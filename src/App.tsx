@@ -36,13 +36,321 @@ import {
   Layers,
   Moon,
   Sun,
-  Palette
+  Palette,
+  X,
+  Check,
+  Minus,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 // --- Contexts ---
+type Language = 'ar' | 'en' | 'ku';
+
+const translations = {
+  ar: {
+    appName: 'أنظمة سناء',
+    dashboard: 'لوحة التحكم',
+    restaurants: 'المطاعم',
+    settings: 'الإعدادات',
+    logout: 'تسجيل الخروج',
+    addRestaurant: 'إضافة مطعم',
+    restaurantName: 'اسم المطعم',
+    slug: 'الرابط المختصر',
+    owner: 'المالك',
+    actions: 'الإجراءات',
+    save: 'حفظ',
+    cancel: 'إلغاء',
+    delete: 'حذف',
+    edit: 'تعديل',
+    loading: 'جاري التحميل...',
+    noRestaurants: 'لا يوجد مطاعم مضافة بعد.',
+    superAdmin: 'المدير العام',
+    chainOwner: 'مالك السلسلة',
+    manager: 'مدير فرع',
+    cashier: 'كاشير',
+    waiter: 'ويتر (نادل)',
+    kitchen: 'مطبخ',
+    driver: 'مندوب توصيل',
+    tableManager: 'مسؤول طاولات',
+    theme: 'المظهر',
+    language: 'اللغة',
+    light: 'فاتح',
+    dark: 'داكن',
+    arabic: 'العربية',
+    english: 'English',
+    kurdish: 'کوردی',
+    login: 'تسجيل الدخول',
+    email: 'البريد الإلكتروني',
+    password: 'كلمة المرور',
+    demoLogin: 'دخول تجريبي',
+    bootstrapDemo: 'تهيئة الحسابات التجريبية',
+    error: 'حدث خطأ ما',
+    insufficientPermissions: 'عذراً، ليس لديك الصلاحية الكافية للقيام بهذا الإجراء أو الوصول لهذه البيانات.',
+    unexpectedError: 'حدث خطأ غير متوقع في التطبيق. يرجى المحاولة مرة أخرى لاحقاً.',
+    reload: 'إعادة تحميل الصفحة',
+    orders: 'الطلبات',
+    categories: 'الأصناف',
+    meals: 'الوجبات',
+    activityLogs: 'سجل النشاطات',
+    stats: 'الإحصائيات',
+    totalOrders: 'إجمالي الطلبات',
+    totalSales: 'إجمالي المبيعات',
+    activeUsers: 'المستخدمين النشطين',
+    newOrder: 'طلب جديد',
+    customerName: 'اسم الزبون',
+    phone: 'رقم الهاتف',
+    total: 'المجموع',
+    status: 'الحالة',
+    pending: 'قيد الانتظار',
+    preparing: 'جاري التحضير',
+    ready: 'جاهز للتوصيل',
+    outForDelivery: 'خارج للتوصيل',
+    completed: 'تم التسليم',
+    cancelled: 'ملغي',
+    confirmDelete: 'هل أنت متأكد من الحذف؟ سيتم مسح كافة البيانات المرتبطة.',
+    active: 'نشط',
+    capture: 'التقاط صورة',
+    noRestaurant: 'لم يتم العثور على مطعم مرتبط بهذا الحساب.',
+    restaurantSettings: 'إعدادات المطعم',
+    logoDesc: 'سيظهر الشعار في المنيو الرقمي ولوحات التحكم.',
+    dangerZone: 'منطقة الخطر',
+    dangerZoneDesc: 'تعطيل الحساب سيمنع الوصول إلى النظام بشكل مؤقت.',
+    deactivateAccount: 'تعطيل الحساب',
+    currency: 'د.ع',
+    yourOrder: 'طلبك',
+    placeOrder: 'إتمام الطلب',
+    checkout: 'الدفع',
+    completeOrder: 'إكمال طلبك',
+    confirmOrder: 'تأكيد الطلب',
+    orderSuccess: 'تم استلام طلبك بنجاح!',
+    orderSuccessDesc: 'سيتم تحضير طلبك وتوصيله في أقرب وقت ممكن.',
+    backToMenu: 'العودة للمنيو',
+    todayOrders: 'طلبات اليوم',
+    viewBranch: 'عرض الفرع',
+    employee: 'الموظف',
+    branch: 'الفرع',
+    action: 'الإجراء',
+    details: 'التفاصيل',
+    visualAudit: 'التوثيق المرئي',
+    time: 'الوقت',
+    loginAction: 'دخول',
+    tableManagement: 'إدارة الطاولات',
+    driverTracking: 'تتبع السائقين',
+    loyaltyPoints: 'نقاط الولاء',
+    digitalMenu: 'المنيو الرقمي',
+    tableManagementDesc: 'إدارة مخططات الطوابق والحجوزات',
+    driverTrackingDesc: 'تتبع التوصيل في الوقت الفعلي',
+    loyaltyPointsDesc: 'نظام مكافآت العملاء',
+    digitalMenuDesc: 'منيو عام عبر رمز QR',
+  },
+  en: {
+    appName: 'Sanaa Systems',
+    dashboard: 'Dashboard',
+    restaurants: 'Restaurants',
+    settings: 'Settings',
+    logout: 'Logout',
+    addRestaurant: 'Add Restaurant',
+    restaurantName: 'Restaurant Name',
+    slug: 'Slug',
+    owner: 'Owner',
+    actions: 'Actions',
+    save: 'Save',
+    cancel: 'Cancel',
+    delete: 'Delete',
+    edit: 'Edit',
+    loading: 'Loading...',
+    noRestaurants: 'No restaurants added yet.',
+    superAdmin: 'Super Admin',
+    chainOwner: 'Chain Owner',
+    manager: 'Branch Manager',
+    cashier: 'Cashier',
+    waiter: 'Waiter',
+    kitchen: 'Kitchen',
+    driver: 'Driver',
+    tableManager: 'Table Manager',
+    theme: 'Theme',
+    language: 'Language',
+    light: 'Light',
+    dark: 'Dark',
+    arabic: 'العربية',
+    english: 'English',
+    kurdish: 'کوردی',
+    login: 'Login',
+    email: 'Email',
+    password: 'Password',
+    demoLogin: 'Demo Login',
+    bootstrapDemo: 'Initialize Demo Accounts',
+    error: 'Something went wrong',
+    insufficientPermissions: 'Sorry, you do not have sufficient permissions to perform this action or access this data.',
+    unexpectedError: 'An unexpected error occurred. Please try again later.',
+    reload: 'Reload Page',
+    orders: 'Orders',
+    categories: 'Categories',
+    meals: 'Meals',
+    activityLogs: 'Activity Logs',
+    stats: 'Statistics',
+    totalOrders: 'Total Orders',
+    totalSales: 'Total Sales',
+    activeUsers: 'Active Users',
+    newOrder: 'New Order',
+    customerName: 'Customer Name',
+    phone: 'Phone',
+    total: 'Total',
+    status: 'Status',
+    pending: 'Pending',
+    preparing: 'Preparing',
+    ready: 'Ready for Delivery',
+    outForDelivery: 'Out for Delivery',
+    completed: 'Completed',
+    cancelled: 'Cancelled',
+    confirmDelete: 'Are you sure you want to delete? All associated data will be removed.',
+    active: 'Active',
+    capture: 'Capture Photo',
+    noRestaurant: 'No restaurant found for this account.',
+    restaurantSettings: 'Restaurant Settings',
+    logoDesc: 'The logo will appear in the digital menu and dashboards.',
+    dangerZone: 'Danger Zone',
+    dangerZoneDesc: 'Deactivating the account will temporarily prevent access to the system.',
+    deactivateAccount: 'Deactivate Account',
+    currency: 'IQD',
+    yourOrder: 'Your Order',
+    placeOrder: 'Place Order',
+    checkout: 'Checkout',
+    completeOrder: 'Complete Your Order',
+    confirmOrder: 'Confirm Order',
+    orderSuccess: 'Order Placed Successfully!',
+    orderSuccessDesc: 'Your order will be prepared and delivered as soon as possible.',
+    backToMenu: 'Back to Menu',
+    todayOrders: 'Today\'s Orders',
+    viewBranch: 'View Branch',
+    employee: 'Employee',
+    branch: 'Branch',
+    action: 'Action',
+    details: 'Details',
+    visualAudit: 'Visual Audit',
+    time: 'Time',
+    loginAction: 'Login',
+    tableManagement: 'Table Management',
+    driverTracking: 'Driver Tracking',
+    loyaltyPoints: 'Loyalty Points',
+    digitalMenu: 'Digital Menu',
+    tableManagementDesc: 'Manage floor plans and reservations',
+    driverTrackingDesc: 'Real-time delivery tracking',
+    loyaltyPointsDesc: 'Customer rewards system',
+    digitalMenuDesc: 'Public menu via QR code',
+  },
+  ku: {
+    appName: 'سیستەمەکانی سەنا',
+    dashboard: 'داشبۆرد',
+    restaurants: 'چێشتخانەکان',
+    settings: 'ڕێکخستنەکان',
+    logout: 'چوونە دەرەوە',
+    addRestaurant: 'زیادکردنی چێشتخانە',
+    restaurantName: 'ناوی چێشتخانە',
+    slug: 'بەستەری کورت',
+    owner: 'خاوەن',
+    actions: 'کردارەکان',
+    save: 'پاشەکەوتکردن',
+    cancel: 'پاشگەزبوونەوە',
+    delete: 'سڕینەوە',
+    edit: 'دەستکاریکردن',
+    loading: 'بارکردن...',
+    noRestaurants: 'هیچ چێشتخانەیەک زیاد نەکراوە.',
+    superAdmin: 'بەڕێوەبەری گشتی',
+    chainOwner: 'خاوەنی زنجیرە',
+    manager: 'بەڕێوەبەری لق',
+    cashier: 'کاشێر',
+    waiter: 'وەیتەر',
+    kitchen: 'مەتبەخ',
+    driver: 'گەیاندن',
+    tableManager: 'بەڕێوەبەری مێزەکان',
+    theme: 'ڕووکار',
+    language: 'زمان',
+    light: 'ڕووناک',
+    dark: 'تاریک',
+    arabic: 'العربية',
+    english: 'English',
+    kurdish: 'کوردی',
+    login: 'چوونە ژوورەوە',
+    email: 'ئیمەیڵ',
+    password: 'وشەی نهێنی',
+    demoLogin: 'چوونە ژوورەوەی تاقیکاری',
+    bootstrapDemo: 'ئامادەکردنی هەژمارە تاقیکارییەکان',
+    error: 'هەڵەیەک ڕوویدا',
+    insufficientPermissions: 'ببورە، دەسەڵاتی پێویستت نییە بۆ ئەم کارە.',
+    unexpectedError: 'هەڵەیەکی چاوەڕواننەکراو ڕوویدا. تکایە دواتر هەوڵ بدەرەوە.',
+    reload: 'دووبارە بارکردنەوەی پەڕە',
+    orders: 'داواکارییەکان',
+    categories: 'جۆرەکان',
+    meals: 'ژەمەکان',
+    activityLogs: 'تۆماری چالاکییەکان',
+    stats: 'ئامارەکان',
+    totalOrders: 'کۆی داواکارییەکان',
+    totalSales: 'کۆی فرۆش',
+    activeUsers: 'بەکارهێنەرە چالاکەکان',
+    newOrder: 'داواکاری نوێ',
+    customerName: 'ناوی کڕیار',
+    phone: 'ژمارەی تەلەفۆن',
+    total: 'کۆ',
+    status: 'بارودۆخ',
+    pending: 'لە چاوەڕوانیدا',
+    preparing: 'لە ئامادەکردندایە',
+    ready: 'ئامادەیە بۆ گەیاندن',
+    outForDelivery: 'لە ڕێگایە بۆ گەیاندن',
+    completed: 'تەواو بوو',
+    cancelled: 'هەڵوەشایەوە',
+    confirmDelete: 'ئایا دڵنیایت لە سڕینەوە؟ هەموو زانیارییە پەیوەندیدارەکان دەسڕێنەوە.',
+    active: 'چالاک',
+    capture: 'وێنەگرتن',
+    noRestaurant: 'هیچ چێشتخانەیەک بۆ ئەم هەژمارە نەدۆزرایەوە.',
+    restaurantSettings: 'ڕێکخستنەکانی چێشتخانە',
+    logoDesc: 'لۆگۆکە لە مینیۆی دیجیتاڵی و داشبۆردەکاندا دەردەکەوێت.',
+    dangerZone: 'ناوچەی مەترسی',
+    dangerZoneDesc: 'ناچالاککردنی هەژمارەکە بە شێوەیەکی کاتی ڕێگری لە دەستگەیشتن بە سیستەمەکە دەکات.',
+    deactivateAccount: 'ناچالاککردنی هەژمارە',
+    currency: 'د.ع',
+    yourOrder: 'داواکارییەکەت',
+    placeOrder: 'تەواوکردنی داواکاری',
+    checkout: 'پارەدان',
+    completeOrder: 'تەواوکردنی داواکارییەکەت',
+    confirmOrder: 'تەواوکردنی داواکاری',
+    orderSuccess: 'داواکارییەکەت بە سەرکەوتوویی وەرگیرا!',
+    orderSuccessDesc: 'داواکارییەکەت ئامادە دەکرێت و لە زووترین کاتدا دەگەیەنرێت.',
+    backToMenu: 'گەڕانەوە بۆ مینیۆ',
+    todayOrders: 'داواکارییەکانی ئەمڕۆ',
+    viewBranch: 'بینینی لق',
+    employee: 'کارمەند',
+    branch: 'لق',
+    action: 'کردار',
+    details: 'زانیارییەکان',
+    visualAudit: 'تۆماری وێنەیی',
+    time: 'کات',
+    loginAction: 'چوونە ژوورەوە',
+    tableManagement: 'بەڕێوەبردنی مێزەکان',
+    driverTracking: 'تتبع السائقين',
+    loyaltyPoints: 'نقاط الولاء',
+    digitalMenu: 'المنيو الرقمي',
+    tableManagementDesc: 'إدارة مخططات الطوابق والحجوزات',
+    driverTrackingDesc: 'تتبع التوصيل في الوقت الفعلي',
+    loyaltyPointsDesc: 'نظام مكافآت العملاء',
+    digitalMenuDesc: 'منيو عام عبر رمز QR',
+  }
+};
+
+const LanguageContext = createContext<{
+  lang: Language;
+  setLang: (lang: Language) => void;
+  t: (key: keyof typeof translations['ar']) => string;
+}>({
+  lang: 'ar',
+  setLang: () => {},
+  t: (key) => translations['ar'][key],
+});
+
+const useLanguage = () => useContext(LanguageContext);
+
 const ThemeContext = createContext<{
   theme: ThemeConfig;
   setTheme: (theme: ThemeConfig) => void;
@@ -139,13 +447,13 @@ class ErrorBoundary extends React.Component<any, any> {
         <div className="min-h-screen flex items-center justify-center bg-stone-50 p-6">
           <Card className="max-w-md w-full p-8 text-center space-y-4">
             <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
-            <h2 className="text-xl font-bold text-stone-900">حدث خطأ ما</h2>
+            <h2 className="text-xl font-bold text-stone-900">حدث خطأ ما / Something went wrong</h2>
             <p className="text-stone-600 text-sm">
               {this.state.error?.message.includes('{"error":') 
                 ? "عذراً، ليس لديك الصلاحية الكافية للقيام بهذا الإجراء أو الوصول لهذه البيانات."
                 : "حدث خطأ غير متوقع في التطبيق. يرجى المحاولة مرة أخرى لاحقاً."}
             </p>
-            <Button onClick={() => window.location.reload()}>إعادة تحميل الصفحة</Button>
+            <Button onClick={() => window.location.reload()}>إعادة تحميل الصفحة / Reload Page</Button>
           </Card>
         </div>
       );
@@ -259,40 +567,84 @@ const Card = ({ className, children, ...props }: React.HTMLAttributes<HTMLDivEle
 );
 
 // --- Layout ---
-const DashboardLayout = ({ children, title, role }: { children: React.ReactNode; title: string; role: string }) => {
+const DashboardLayout = ({ children, title, role, restaurant }: { children: React.ReactNode; title: string; role: string; restaurant?: Restaurant | null }) => {
   const handleLogout = () => signOut(auth);
   const { theme, toggleMode } = useTheme();
+  const { lang, setLang, t } = useLanguage();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const roleLabels: Record<string, string> = {
-    super_admin: 'المدير العام',
-    chain_owner: 'مالك السلسلة',
-    manager: 'مدير فرع',
-    cashier: 'كاشير',
-    waiter: 'ويتر (نادل)',
-    kitchen: 'مطبخ',
-    driver: 'مندوب توصيل',
-    table_manager: 'مسؤول طاولات'
+  const roleLabels: Record<string, keyof typeof translations['ar']> = {
+    super_admin: 'superAdmin',
+    chain_owner: 'chainOwner',
+    manager: 'manager',
+    cashier: 'cashier',
+    waiter: 'waiter',
+    kitchen: 'kitchen',
+    driver: 'driver',
+    table_manager: 'tableManager'
   };
+
+  const isRTL = lang === 'ar' || lang === 'ku';
 
   return (
     <div className={cn(
       "flex min-h-screen font-sans transition-colors duration-300",
       theme.mode === 'dark' ? "bg-[#0a0a0a] text-white" : "bg-stone-50 text-stone-900"
-    )} dir="rtl">
+    )} dir={isRTL ? "rtl" : "ltr"}>
+      
+      {/* Mobile Header */}
+      <div className={cn(
+        "lg:hidden fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-4 z-50 border-b",
+        theme.mode === 'dark' ? "bg-black/80 border-white/10 backdrop-blur-xl" : "bg-white/80 border-stone-200 backdrop-blur-xl"
+      )}>
+        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2">
+          <MenuIcon className="w-6 h-6" />
+        </button>
+        <div className="flex items-center gap-2 font-bold">
+          {restaurant?.logo ? (
+            <img src={restaurant.logo} alt={restaurant.name} className="w-8 h-8 rounded-lg object-cover" referrerPolicy="no-referrer" />
+          ) : (
+            <div className="w-8 h-8 bg-[#00FF00] rounded-lg flex items-center justify-center text-black">
+              <Utensils className="w-5 h-5" />
+            </div>
+          )}
+          <span>{restaurant?.name || t('appName')}</span>
+        </div>
+        <div className="w-10"></div>
+      </div>
+
+      {/* Sidebar Overlay */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsSidebarOpen(false)}
+            className="fixed inset-0 bg-black/60 z-50 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
       <aside className={cn(
-        "w-64 border-l flex flex-col transition-colors duration-300",
+        "fixed inset-y-0 z-50 w-64 border-l flex flex-col transition-all duration-300 lg:static lg:translate-x-0",
+        isRTL ? (isSidebarOpen ? "right-0" : "right-[-256px]") : (isSidebarOpen ? "left-0" : "left-[-256px]"),
         theme.mode === 'dark' ? "bg-black/40 border-white/10 backdrop-blur-xl" : "bg-white border-stone-200"
       )}>
         <div className="p-6 border-b border-white/5">
           <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
-            <div className="w-8 h-8 bg-[#00FF00] rounded-lg flex items-center justify-center text-black shadow-[0_0_15px_rgba(0,255,0,0.3)]">
-              <Utensils className="w-5 h-5" />
-            </div>
-            <span>أنظمة سناء</span>
+            {restaurant?.logo ? (
+              <img src={restaurant.logo} alt={restaurant.name} className="w-8 h-8 rounded-lg object-cover" referrerPolicy="no-referrer" />
+            ) : (
+              <div className="w-8 h-8 bg-[#00FF00] rounded-lg flex items-center justify-center text-black shadow-[0_0_15px_rgba(0,255,0,0.3)]">
+                <Utensils className="w-5 h-5" />
+              </div>
+            )}
+            <span>{restaurant?.name || t('appName')}</span>
           </div>
           <p className="text-[10px] text-stone-500 mt-2 uppercase tracking-widest font-bold">
-            {roleLabels[role] || 'إدارة الفرع'}
+            {t(roleLabels[role] || 'manager')}
           </p>
         </div>
 
@@ -301,67 +653,67 @@ const DashboardLayout = ({ children, title, role }: { children: React.ReactNode;
             <>
               <Link to="/admin" className="flex items-center gap-3 px-3 py-2 text-stone-400 hover:text-[#00FF00] hover:bg-[#00FF00]/5 rounded-lg transition-all">
                 <LayoutDashboard className="w-5 h-5" />
-                <span className="text-sm font-bold">لوحة التحكم</span>
+                <span className="text-sm font-bold">{t('dashboard')}</span>
               </Link>
               <Link to="/admin/restaurants" className="flex items-center gap-3 px-3 py-2 text-stone-400 hover:text-[#00FF00] hover:bg-[#00FF00]/5 rounded-lg transition-all">
                 <Store className="w-5 h-5" />
-                <span className="text-sm font-bold">المطاعم</span>
+                <span className="text-sm font-bold">{t('restaurants')}</span>
               </Link>
             </>
           ) : role === 'chain_owner' ? (
             <>
               <Link to="/chain" className="flex items-center gap-3 px-3 py-2 text-stone-400 hover:text-[#00FF00] hover:bg-[#00FF00]/5 rounded-lg transition-all">
                 <LayoutDashboard className="w-5 h-5" />
-                <span className="text-sm font-bold">العرض الشامل</span>
+                <span className="text-sm font-bold">{t('dashboard')}</span>
               </Link>
               <Link to="/chain/logs" className="flex items-center gap-3 px-3 py-2 text-stone-400 hover:text-[#00FF00] hover:bg-[#00FF00]/5 rounded-lg transition-all">
                 <Activity className="w-5 h-5" />
-                <span className="text-sm font-bold">سجلات النشاطات</span>
+                <span className="text-sm font-bold">{t('activityLogs')}</span>
               </Link>
               <Link to="/chain/analytics" className="flex items-center gap-3 px-3 py-2 text-stone-400 hover:text-[#00FF00] hover:bg-[#00FF00]/5 rounded-lg transition-all">
                 <BarChart3 className="w-5 h-5" />
-                <span className="text-sm font-bold">التحليلات</span>
+                <span className="text-sm font-bold">{t('stats')}</span>
               </Link>
             </>
           ) : (
             <>
               <Link to="/restaurant" className="flex items-center gap-3 px-3 py-2 text-stone-400 hover:text-[#00FF00] hover:bg-[#00FF00]/5 rounded-lg transition-all">
                 <LayoutDashboard className="w-5 h-5" />
-                <span className="text-sm font-bold">لوحة التحكم</span>
+                <span className="text-sm font-bold">{t('dashboard')}</span>
               </Link>
               
               {(role === 'manager' || role === 'cashier' || role === 'waiter') && (
                 <Link to="/restaurant/orders" className="flex items-center gap-3 px-3 py-2 text-stone-400 hover:text-[#00FF00] hover:bg-[#00FF00]/5 rounded-lg transition-all">
                   <ShoppingBag className="w-5 h-5" />
-                  <span className="text-sm font-bold">الطلبات</span>
+                  <span className="text-sm font-bold">{t('orders')}</span>
                 </Link>
               )}
 
               {(role === 'manager') && (
                 <Link to="/restaurant/menu" className="flex items-center gap-3 px-3 py-2 text-stone-400 hover:text-[#00FF00] hover:bg-[#00FF00]/5 rounded-lg transition-all">
                   <MenuIcon className="w-5 h-5" />
-                  <span className="text-sm font-bold">المنيو</span>
+                  <span className="text-sm font-bold">{t('categories')}</span>
                 </Link>
               )}
 
               {(role === 'manager' || role === 'kitchen') && (
                 <Link to="/restaurant/kitchen" className="flex items-center gap-3 px-3 py-2 text-stone-400 hover:text-[#00FF00] hover:bg-[#00FF00]/5 rounded-lg transition-all">
                   <Utensils className="w-5 h-5" />
-                  <span className="text-sm font-bold">المطبخ</span>
+                  <span className="text-sm font-bold">{t('kitchen')}</span>
                 </Link>
               )}
 
               {(role === 'manager' || role === 'table_manager' || role === 'waiter') && (
                 <Link to="/restaurant/tables" className="flex items-center gap-3 px-3 py-2 text-stone-400 hover:text-[#00FF00] hover:bg-[#00FF00]/5 rounded-lg transition-all">
                   <Layers className="w-5 h-5" />
-                  <span className="text-sm font-bold">الطاولات</span>
+                  <span className="text-sm font-bold">{t('tableManager')}</span>
                 </Link>
               )}
 
               {(role === 'manager' || role === 'driver') && (
                 <Link to="/restaurant/delivery" className="flex items-center gap-3 px-3 py-2 text-stone-400 hover:text-[#00FF00] hover:bg-[#00FF00]/5 rounded-lg transition-all">
                   <MapPin className="w-5 h-5" />
-                  <span className="text-sm font-bold">التوصيل</span>
+                  <span className="text-sm font-bold">{t('driver')}</span>
                 </Link>
               )}
             </>
@@ -369,19 +721,35 @@ const DashboardLayout = ({ children, title, role }: { children: React.ReactNode;
         </nav>
 
         <div className="p-4 border-t border-white/5 space-y-2">
+          {/* Language Switcher */}
+          <div className="flex items-center gap-1 p-1 bg-black/20 rounded-lg">
+            {(['ar', 'en', 'ku'] as Language[]).map((l) => (
+              <button
+                key={l}
+                onClick={() => setLang(l)}
+                className={cn(
+                  "flex-1 py-1 text-[10px] font-bold rounded-md transition-all",
+                  lang === l ? "bg-[#00FF00] text-black" : "text-stone-500 hover:text-stone-300"
+                )}
+              >
+                {l.toUpperCase()}
+              </button>
+            ))}
+          </div>
+
           <button 
             onClick={toggleMode}
             className="flex items-center gap-3 w-full px-3 py-2 text-stone-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
           >
             {theme.mode === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            <span className="text-sm font-bold">{theme.mode === 'dark' ? 'الوضع الفاتح' : 'الوضع الداكن'}</span>
+            <span className="text-sm font-bold">{theme.mode === 'dark' ? t('light') : t('dark')}</span>
           </button>
           <button 
             onClick={handleLogout}
             className="flex items-center gap-3 w-full px-3 py-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
           >
             <LogOut className="w-5 h-5" />
-            <span className="text-sm font-bold">تسجيل الخروج</span>
+            <span className="text-sm font-bold">{t('logout')}</span>
           </button>
         </div>
       </aside>
@@ -389,7 +757,7 @@ const DashboardLayout = ({ children, title, role }: { children: React.ReactNode;
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
         <header className={cn(
-          "h-16 border-b flex items-center justify-between px-8 sticky top-0 z-10 backdrop-blur-md transition-colors duration-300",
+          "h-16 border-b flex items-center justify-between px-8 sticky top-0 z-10 backdrop-blur-md transition-colors duration-300 hidden lg:flex",
           theme.mode === 'dark' ? "bg-black/40 border-white/10" : "bg-white/80 border-stone-200"
         )}>
           <h1 className="text-lg font-bold tracking-tight">{title}</h1>
@@ -397,16 +765,25 @@ const DashboardLayout = ({ children, title, role }: { children: React.ReactNode;
             <div className="text-left hidden sm:block">
               <p className="text-sm font-bold">{auth.currentUser?.displayName || 'مستخدم'}</p>
               <p className="text-[10px] text-stone-500 uppercase font-bold tracking-wider">
-                {roleLabels[role] || 'إدارة الفرع'}
+                {t(roleLabels[role] || 'manager')}
               </p>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 overflow-hidden shadow-lg">
-              <img src={auth.currentUser?.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${auth.currentUser?.uid}`} alt="" referrerPolicy="no-referrer" />
+            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#00FF00] to-emerald-400 p-[2px]">
+              <div className="w-full h-full rounded-full bg-black flex items-center justify-center overflow-hidden">
+                {auth.currentUser?.photoURL ? (
+                  <img src={auth.currentUser.photoURL} alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                ) : (
+                  <Users className="w-5 h-5 text-[#00FF00]" />
+                )}
+              </div>
             </div>
           </div>
         </header>
-        <div className="p-8 max-w-7xl mx-auto">
-          {children}
+
+        <div className="flex-1 p-4 lg:p-8 overflow-y-auto mt-16 lg:mt-0">
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
         </div>
       </main>
     </div>
@@ -765,6 +1142,7 @@ const LoginPage = () => {
 };
 
 const ChainOwnerDashboard = ({ profile }: { profile: UserProfile }) => {
+  const { t } = useLanguage();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -903,17 +1281,17 @@ const ChainOwnerDashboard = ({ profile }: { profile: UserProfile }) => {
                     <span className="text-white font-bold">$420.00</span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-stone-500">طلبات اليوم</span>
+                    <span className="text-stone-500">{t('todayOrders')}</span>
                     <span className="text-white font-bold">24</span>
                   </div>
                 </div>
 
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" className="flex-1 text-xs border-white/10 hover:bg-white/5">
-                    عرض الفرع
+                    {t('viewBranch')}
                   </Button>
                   <Button variant="primary" size="sm" className="flex-1 text-xs bg-[#00FF00] text-black">
-                    الإعدادات
+                    {t('settings')}
                   </Button>
                 </div>
               </Card>
@@ -927,12 +1305,12 @@ const ChainOwnerDashboard = ({ profile }: { profile: UserProfile }) => {
               <table className="w-full text-right border-collapse">
                 <thead>
                   <tr className="border-b border-white/10 bg-white/5">
-                    <th className="px-6 py-4 text-xs font-bold text-stone-500 uppercase tracking-wider">الموظف</th>
-                    <th className="px-6 py-4 text-xs font-bold text-stone-500 uppercase tracking-wider">الفرع</th>
-                    <th className="px-6 py-4 text-xs font-bold text-stone-500 uppercase tracking-wider">الإجراء</th>
-                    <th className="px-6 py-4 text-xs font-bold text-stone-500 uppercase tracking-wider">التفاصيل</th>
-                    <th className="px-6 py-4 text-xs font-bold text-stone-500 uppercase tracking-wider">التوثيق المرئي</th>
-                    <th className="px-6 py-4 text-xs font-bold text-stone-500 uppercase tracking-wider">الوقت</th>
+                    <th className="px-6 py-4 text-xs font-bold text-stone-500 uppercase tracking-wider">{t('employee')}</th>
+                    <th className="px-6 py-4 text-xs font-bold text-stone-500 uppercase tracking-wider">{t('branch')}</th>
+                    <th className="px-6 py-4 text-xs font-bold text-stone-500 uppercase tracking-wider">{t('action')}</th>
+                    <th className="px-6 py-4 text-xs font-bold text-stone-500 uppercase tracking-wider">{t('details')}</th>
+                    <th className="px-6 py-4 text-xs font-bold text-stone-500 uppercase tracking-wider">{t('visualAudit')}</th>
+                    <th className="px-6 py-4 text-xs font-bold text-stone-500 uppercase tracking-wider">{t('time')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
@@ -960,7 +1338,7 @@ const ChainOwnerDashboard = ({ profile }: { profile: UserProfile }) => {
                           log.actionType === 'delete' ? "bg-red-500/10 text-red-400" :
                           "bg-emerald-500/10 text-emerald-400"
                         )}>
-                          {log.actionType === 'login' ? 'دخول' : log.actionType}
+                          {log.actionType === 'login' ? t('loginAction') : log.actionType}
                         </span>
                       </td>
                       <td className="px-6 py-4">
@@ -993,6 +1371,7 @@ const ChainOwnerDashboard = ({ profile }: { profile: UserProfile }) => {
 };
 
 const FeatureToggleSystem = ({ restaurant, onUpdate }: { restaurant: Restaurant; onUpdate: (flags: FeatureFlags) => void }) => {
+  const { t } = useLanguage();
   const flags = restaurant.featureFlags || { tables: false, drivers: false, points: false, digitalMenu: true };
 
   const toggle = (key: keyof FeatureFlags) => {
@@ -1000,10 +1379,10 @@ const FeatureToggleSystem = ({ restaurant, onUpdate }: { restaurant: Restaurant;
   };
 
   const features = [
-    { key: 'tables', name: 'إدارة الطاولات', icon: Layers, desc: 'إدارة مخططات الطوابق والحجوزات' },
-    { key: 'drivers', name: 'تتبع السائقين', icon: MapPin, desc: 'تتبع التوصيل في الوقت الفعلي' },
-    { key: 'points', name: 'نقاط الولاء', icon: BarChart3, desc: 'نظام مكافآت العملاء' },
-    { key: 'digitalMenu', name: 'المنيو الرقمي', icon: MenuIcon, desc: 'منيو عام عبر رمز QR' },
+    { key: 'tables', name: t('tableManagement'), icon: Layers, desc: t('tableManagementDesc') },
+    { key: 'drivers', name: t('driverTracking'), icon: MapPin, desc: t('driverTrackingDesc') },
+    { key: 'points', name: t('loyaltyPoints'), icon: BarChart3, desc: t('loyaltyPointsDesc') },
+    { key: 'digitalMenu', name: t('digitalMenu'), icon: MenuIcon, desc: t('digitalMenuDesc') },
   ];
 
   return (
@@ -1044,10 +1423,13 @@ const FeatureToggleSystem = ({ restaurant, onUpdate }: { restaurant: Restaurant;
 };
 
 const SuperAdminDashboard = () => {
+  const { t } = useLanguage();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newRes, setNewRes] = useState({ name: '', slug: '', ownerEmail: '', ownerName: '' });
+  const [editingRes, setEditingRes] = useState<Restaurant | null>(null);
+  const [newRes, setNewRes] = useState({ name: '', slug: '', ownerEmail: '', ownerName: '', logo: '' });
+  const { capture } = useCamera();
 
   useEffect(() => {
     const q = collection(db, 'restaurants');
@@ -1064,154 +1446,210 @@ const SuperAdminDashboard = () => {
   const handleAddRestaurant = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // In a real app, we'd create the user in Auth too, but here we'll just create the profile
-      // and assume they'll log in with that email.
-      const resRef = await addDoc(collection(db, 'restaurants'), {
-        name: newRes.name,
-        slug: newRes.slug.toLowerCase().replace(/\s+/g, '-'),
-        ownerId: newRes.ownerEmail, // Using email as ID for simplicity in this demo
-        description: `Welcome to ${newRes.name}`,
-        featureFlags: { tables: false, drivers: false, points: false, digitalMenu: true },
-        theme: { mode: 'dark', primaryColor: '#00FF00' }
-      });
+      if (editingRes) {
+        await updateDoc(doc(db, 'restaurants', editingRes.id), {
+          name: newRes.name,
+          slug: newRes.slug.toLowerCase().replace(/\s+/g, '-'),
+          logo: newRes.logo
+        });
+      } else {
+        await addDoc(collection(db, 'restaurants'), {
+          name: newRes.name,
+          slug: newRes.slug.toLowerCase().replace(/\s+/g, '-'),
+          ownerId: newRes.ownerEmail,
+          logo: newRes.logo,
+          description: `Welcome to ${newRes.name}`,
+          featureFlags: { tables: false, drivers: false, points: false, digitalMenu: true },
+          theme: { mode: 'dark', primaryColor: '#00FF00' }
+        });
 
-      // Create owner profile (mocking UID as email for now)
-      // Note: In production, use Firebase Admin SDK to create users
-      await addDoc(collection(db, 'users'), {
-        uid: newRes.ownerEmail,
-        name: newRes.ownerName,
-        role: 'chain_owner',
-        status: 'active'
-      });
+        await addDoc(collection(db, 'users'), {
+          uid: newRes.ownerEmail,
+          name: newRes.ownerName,
+          role: 'chain_owner',
+          status: 'active'
+        });
+      }
 
       setShowAddModal(false);
-      setNewRes({ name: '', slug: '', ownerEmail: '', ownerName: '' });
+      setEditingRes(null);
+      setNewRes({ name: '', slug: '', ownerEmail: '', ownerName: '', logo: '' });
     } catch (err) {
       console.error(err);
     }
   };
 
   const handleDeleteRestaurant = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this restaurant? This will remove all its data.')) return;
+    if (!confirm(t('confirmDelete'))) return;
     try {
       await deleteDoc(doc(db, 'restaurants', id));
-      // In a real app, we'd also delete categories, meals, and orders, or use a Cloud Function
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleCaptureLogo = async () => {
+    const photo = await capture();
+    if (photo) {
+      setNewRes({ ...newRes, logo: photo });
     }
   };
 
   if (loading) return <LoadingSpinner />;
 
   return (
-    <DashboardLayout title="لوحة تحكم المدير العام" role="super_admin">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" dir="rtl">
-        <Card className="p-6">
-          <p className="text-sm text-stone-400 font-medium uppercase tracking-wider">إجمالي المطاعم</p>
-          <p className="text-3xl font-bold text-stone-900 mt-1">{restaurants.length}</p>
+    <DashboardLayout title={t('superAdmin')} role="super_admin">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <Card className="p-6 bg-black/40 border-white/10">
+          <p className="text-sm text-stone-400 font-bold uppercase">{t('restaurants')}</p>
+          <p className="text-3xl font-bold text-white mt-1">{restaurants.length}</p>
         </Card>
-        <Card className="p-6">
-          <p className="text-sm text-stone-400 font-medium uppercase tracking-wider">الاشتراكات النشطة</p>
-          <p className="text-3xl font-bold text-stone-900 mt-1">{restaurants.length}</p>
+        <Card className="p-6 bg-black/40 border-white/10">
+          <p className="text-sm text-stone-400 font-bold uppercase">{t('activeOrders')}</p>
+          <p className="text-3xl font-bold text-white mt-1">{restaurants.length}</p>
         </Card>
-        <Card className="p-6">
-          <p className="text-sm text-stone-400 font-medium uppercase tracking-wider">حالة النظام</p>
+        <Card className="p-6 bg-black/40 border-white/10">
+          <p className="text-sm text-stone-400 font-bold uppercase">{t('status')}</p>
           <div className="flex items-center gap-2 mt-2">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <p className="text-lg font-semibold text-emerald-600">سليم</p>
+            <div className="w-2 h-2 rounded-full bg-[#00FF00] animate-pulse" />
+            <p className="text-lg font-bold text-[#00FF00]">{t('active')}</p>
           </div>
         </Card>
       </div>
 
-      <div className="flex items-center justify-between mb-6" dir="rtl">
-        <h2 className="text-xl font-bold text-stone-900">المطاعم المضافة حديثاً</h2>
-        <Button size="sm" className="gap-2" onClick={() => setShowAddModal(true)}>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-bold text-white">{t('restaurants')}</h2>
+        <Button size="sm" className="gap-2 bg-[#00FF00] text-black" onClick={() => {
+          setEditingRes(null);
+          setNewRes({ name: '', slug: '', ownerEmail: '', ownerName: '', logo: '' });
+          setShowAddModal(true);
+        }}>
           <Plus className="w-4 h-4" />
-          إضافة مطعم
+          {t('addRestaurant')}
         </Button>
       </div>
 
       {showAddModal && (
-        <div className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-6">
-          <Card className="max-w-md w-full p-8 space-y-6" dir="rtl">
-            <h3 className="text-xl font-bold text-stone-900">إضافة مطعم جديد</h3>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-6">
+          <Card className="max-w-md w-full p-8 bg-stone-900 border-white/10 space-y-6">
+            <h3 className="text-xl font-bold text-white">{editingRes ? t('edit') : t('addRestaurant')}</h3>
             <form onSubmit={handleAddRestaurant} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-stone-700 mb-1">اسم المطعم</label>
+                <label className="block text-sm font-bold text-stone-400 mb-1">{t('restaurantName')}</label>
                 <input 
                   type="text" 
                   required
-                  className="w-full px-4 py-2 border border-stone-200 rounded-lg focus:ring-2 focus:ring-stone-900 outline-none"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white outline-none focus:border-[#00FF00]"
                   value={newRes.name}
                   onChange={e => setNewRes({ ...newRes, name: e.target.value })}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-stone-700 mb-1">المعرف (Slug)</label>
+                <label className="block text-sm font-bold text-stone-400 mb-1">Slug</label>
                 <input 
                   type="text" 
                   required
-                  placeholder="مثال: al-nakheel"
-                  className="w-full px-4 py-2 border border-stone-200 rounded-lg focus:ring-2 focus:ring-stone-900 outline-none"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white outline-none focus:border-[#00FF00]"
                   value={newRes.slug}
                   onChange={e => setNewRes({ ...newRes, slug: e.target.value })}
                 />
               </div>
+              {!editingRes && (
+                <>
+                  <div>
+                    <label className="block text-sm font-bold text-stone-400 mb-1">{t('email')}</label>
+                    <input 
+                      type="email" 
+                      required
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white outline-none focus:border-[#00FF00]"
+                      value={newRes.ownerEmail}
+                      onChange={e => setNewRes({ ...newRes, ownerEmail: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-stone-400 mb-1">{t('name')}</label>
+                    <input 
+                      type="text" 
+                      required
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white outline-none focus:border-[#00FF00]"
+                      value={newRes.ownerName}
+                      onChange={e => setNewRes({ ...newRes, ownerName: e.target.value })}
+                    />
+                  </div>
+                </>
+              )}
               <div>
-                <label className="block text-sm font-medium text-stone-700 mb-1">بريد المالك</label>
-                <input 
-                  type="email" 
-                  required
-                  className="w-full px-4 py-2 border border-stone-200 rounded-lg focus:ring-2 focus:ring-stone-900 outline-none"
-                  value={newRes.ownerEmail}
-                  onChange={e => setNewRes({ ...newRes, ownerEmail: e.target.value })}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-stone-700 mb-1">اسم المالك</label>
-                <input 
-                  type="text" 
-                  required
-                  className="w-full px-4 py-2 border border-stone-200 rounded-lg focus:ring-2 focus:ring-stone-900 outline-none"
-                  value={newRes.ownerName}
-                  onChange={e => setNewRes({ ...newRes, ownerName: e.target.value })}
-                />
+                <label className="block text-sm font-bold text-stone-400 mb-1">{t('logo')}</label>
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+                    {newRes.logo ? (
+                      <img src={newRes.logo} alt="Logo" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    ) : (
+                      <Store className="w-6 h-6 text-stone-600" />
+                    )}
+                  </div>
+                  <Button type="button" variant="outline" size="sm" onClick={handleCaptureLogo} className="gap-2">
+                    <Camera className="w-4 h-4" />
+                    {t('capture')}
+                  </Button>
+                </div>
               </div>
               <div className="flex gap-3 pt-4">
-                <Button type="button" variant="outline" className="flex-1" onClick={() => setShowAddModal(false)}>إلغاء</Button>
-                <Button type="submit" className="flex-1">إنشاء مطعم</Button>
+                <Button type="button" variant="outline" className="flex-1" onClick={() => setShowAddModal(false)}>{t('cancel')}</Button>
+                <Button type="submit" className="flex-1 bg-[#00FF00] text-black">{editingRes ? t('save') : t('addRestaurant')}</Button>
               </div>
             </form>
           </Card>
         </div>
       )}
 
-      <Card dir="rtl">
-        <table className="w-full text-right">
-          <thead className="bg-stone-50 border-b border-stone-100">
-            <tr>
-              <th className="px-6 py-4 text-xs font-semibold text-stone-400 uppercase tracking-wider">المطعم</th>
-              <th className="px-6 py-4 text-xs font-semibold text-stone-400 uppercase tracking-wider">المعرف</th>
-              <th className="px-6 py-4 text-xs font-semibold text-stone-400 uppercase tracking-wider">المالك</th>
-              <th className="px-6 py-4 text-xs font-semibold text-stone-400 uppercase tracking-wider text-left">الإجراءات</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-stone-100">
-            {restaurants.map(res => (
-              <tr key={res.id} className="hover:bg-stone-50 transition-colors">
-                <td className="px-6 py-4 font-medium text-stone-900">{res.name}</td>
-                <td className="px-6 py-4 text-stone-500 font-mono text-sm">/{res.slug}</td>
-                <td className="px-6 py-4 text-stone-500">{res.ownerId}</td>
-                <td className="px-6 py-4 text-left">
-                  <div className="flex items-center justify-end gap-2">
-                    <Button variant="ghost" size="sm"><Edit2 className="w-4 h-4" /></Button>
-                    <Button variant="danger" size="sm" onClick={() => handleDeleteRestaurant(res.id)}><Trash2 className="w-4 h-4" /></Button>
-                  </div>
-                </td>
+      <Card className="bg-black/40 border-white/10 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-right">
+            <thead className="bg-white/5 border-b border-white/10">
+              <tr>
+                <th className="px-6 py-4 text-xs font-bold text-stone-500 uppercase">{t('restaurants')}</th>
+                <th className="px-6 py-4 text-xs font-bold text-stone-500 uppercase">Slug</th>
+                <th className="px-6 py-4 text-xs font-bold text-stone-500 uppercase">{t('owner')}</th>
+                <th className="px-6 py-4 text-xs font-bold text-stone-500 uppercase text-left">{t('actions')}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+              {restaurants.map(res => (
+                <tr key={res.id} className="hover:bg-white/5 transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+                        {res.logo ? (
+                          <img src={res.logo} alt={res.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        ) : (
+                          <Store className="w-5 h-5 text-stone-600" />
+                        )}
+                      </div>
+                      <span className="font-bold text-white">{res.name}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-stone-400 font-mono text-sm">/{res.slug}</td>
+                  <td className="px-6 py-4 text-stone-400">{res.ownerId}</td>
+                  <td className="px-6 py-4 text-left">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button variant="ghost" size="sm" onClick={() => {
+                        setEditingRes(res);
+                        setNewRes({ name: res.name, slug: res.slug, ownerEmail: res.ownerId || '', ownerName: '', logo: res.logo || '' });
+                        setShowAddModal(true);
+                      }}>
+                        <Edit2 className="w-4 h-4" />
+                      </Button>
+                      <Button variant="danger" size="sm" onClick={() => handleDeleteRestaurant(res.id)}>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Card>
     </DashboardLayout>
   );
@@ -1351,106 +1789,224 @@ const MenuManagement = ({ restaurantId }: { restaurantId: string }) => {
 };
 
 const RestaurantDashboard = ({ profile }: { profile: UserProfile }) => {
+  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'orders' | 'settings'>('orders');
+  const [editingName, setEditingName] = useState('');
+  const { capture } = useCamera();
+  const { t } = useLanguage();
   const restaurantId = profile.restaurantId || '';
 
   useEffect(() => {
-    if (!restaurantId) return;
-    const q = collection(db, 'restaurants', restaurantId, 'orders');
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      let fetchedOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
-      
-      // Role-based order filtering
-      if (profile.role === 'kitchen') {
-        fetchedOrders = fetchedOrders.filter(o => o.status === 'pending' || o.status === 'preparing');
-      } else if (profile.role === 'driver') {
-        fetchedOrders = fetchedOrders.filter(o => o.status === 'ready_for_delivery' || o.status === 'out_for_delivery');
-      }
-
-      setOrders(fetchedOrders);
+    if (!restaurantId) {
+      // If it's a chain owner or super admin, they might not have a direct restaurantId
+      // But for this dashboard, we expect one. Let's try to find one if they are a manager.
       setLoading(false);
+      return;
+    }
+
+    const unsubscribeRes = onSnapshot(doc(db, 'restaurants', restaurantId), (docSnap) => {
+      if (docSnap.exists()) {
+        const resData = { id: docSnap.id, ...docSnap.data() } as Restaurant;
+        setRestaurant(resData);
+        setEditingName(resData.name);
+
+        const qOrders = collection(db, 'restaurants', restaurantId, 'orders');
+        const unsubscribeOrders = onSnapshot(qOrders, (orderSnap) => {
+          let fetchedOrders = orderSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
+          
+          if (profile.role === 'kitchen') {
+            fetchedOrders = fetchedOrders.filter(o => o.status === 'pending' || o.status === 'preparing');
+          } else if (profile.role === 'driver') {
+            fetchedOrders = fetchedOrders.filter(o => o.status === 'ready_for_delivery' || o.status === 'out_for_delivery');
+          }
+
+          setOrders(fetchedOrders);
+          setLoading(false);
+        }, (error) => {
+          handleFirestoreError(error, OperationType.LIST, `restaurants/${restaurantId}/orders`);
+          setLoading(false);
+        });
+
+        return () => unsubscribeOrders();
+      } else {
+        setLoading(false);
+      }
     }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, `restaurants/${restaurantId}/orders`);
+      handleFirestoreError(error, OperationType.GET, `restaurants/${restaurantId}`);
       setLoading(false);
     });
-    return unsubscribe;
+
+    return () => unsubscribeRes();
   }, [restaurantId, profile.role]);
 
-  const updateOrderStatus = async (orderId: string, status: Order['status']) => {
-    const orderRef = doc(db, 'restaurants', restaurantId, 'orders', orderId);
+  const updateStatus = async (orderId: string, status: Order['status']) => {
     try {
-      await updateDoc(orderRef, { status });
+      await updateDoc(doc(db, 'restaurants', restaurantId, 'orders', orderId), { status });
     } catch (err) {
       console.error(err);
     }
   };
 
+  const handleUpdateSettings = async () => {
+    if (!restaurant) return;
+    try {
+      await updateDoc(doc(db, 'restaurants', restaurant.id), {
+        name: editingName
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleUpdateLogo = async () => {
+    if (!restaurant) return;
+    const photo = await capture();
+    if (photo) {
+      try {
+        await updateDoc(doc(db, 'restaurants', restaurant.id), {
+          logo: photo
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
   if (loading) return <LoadingSpinner />;
+  if (!restaurant) return <div className="p-8 text-center text-stone-500">{t('noRestaurant')}</div>;
 
   return (
-    <DashboardLayout title="لوحة تحكم المطعم" role={profile.role}>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" dir="rtl">
-        <Card className="p-6">
-          <p className="text-sm text-stone-400 font-medium uppercase tracking-wider">طلبات قيد الانتظار</p>
-          <p className="text-3xl font-bold text-stone-900 mt-1">{orders.filter(o => o.status === 'pending').length}</p>
-        </Card>
-        <Card className="p-6">
-          <p className="text-sm text-stone-400 font-medium uppercase tracking-wider">قيد التحضير</p>
-          <p className="text-3xl font-bold text-stone-900 mt-1">{orders.filter(o => o.status === 'preparing').length}</p>
-        </Card>
-        <Card className="p-6">
-          <p className="text-sm text-stone-400 font-medium uppercase tracking-wider">مكتملة اليوم</p>
-          <p className="text-3xl font-bold text-stone-900 mt-1">{orders.filter(o => o.status === 'completed').length}</p>
-        </Card>
-        <Card className="p-6">
-          <p className="text-sm text-stone-400 font-medium uppercase tracking-wider">إجمالي الإيرادات</p>
-          <p className="text-3xl font-bold text-emerald-600 mt-1">
-            ${orders.filter(o => o.status === 'completed').reduce((acc, o) => acc + o.total, 0).toFixed(2)}
-          </p>
-        </Card>
-      </div>
+    <DashboardLayout title={restaurant.name} role={profile.role} restaurant={restaurant}>
+      <div className="space-y-6">
+        {(profile.role === 'manager' || profile.role === 'chain_owner') && (
+          <div className="flex items-center gap-4 border-b border-white/10 pb-4">
+            <button 
+              onClick={() => setActiveTab('orders')}
+              className={cn(
+                "px-4 py-2 text-sm font-bold transition-colors",
+                activeTab === 'orders' ? "text-[#00FF00] border-b-2 border-[#00FF00]" : "text-stone-500 hover:text-white"
+              )}
+            >
+              {t('orders')}
+            </button>
+            <button 
+              onClick={() => setActiveTab('settings')}
+              className={cn(
+                "px-4 py-2 text-sm font-bold transition-colors",
+                activeTab === 'settings' ? "text-[#00FF00] border-b-2 border-[#00FF00]" : "text-stone-500 hover:text-white"
+              )}
+            >
+              {t('settings')}
+            </button>
+          </div>
+        )}
 
-      <div className="space-y-4" dir="rtl">
-        {orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map(order => (
-          <div key={order.id}>
-            <Card className="p-6 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className={cn(
-                  "w-12 h-12 rounded-full flex items-center justify-center",
-                  order.status === 'pending' ? "bg-amber-50 text-amber-600" :
-                  order.status === 'preparing' ? "bg-blue-50 text-blue-600" :
-                  order.status === 'completed' ? "bg-emerald-50 text-emerald-600" :
-                  "bg-red-50 text-red-600"
-                )}>
-                  {order.status === 'pending' ? <Clock className="w-6 h-6" /> :
-                   order.status === 'preparing' ? <Loader2 className="w-6 h-6 animate-spin" /> :
-                   order.status === 'completed' ? <CheckCircle2 className="w-6 h-6" /> :
-                   <XCircle className="w-6 h-6" />}
+        {activeTab === 'orders' ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {(['pending', 'preparing', 'ready_for_delivery'] as const).map(status => (
+              <div key={status} className="space-y-4">
+                <div className="flex items-center justify-between px-2">
+                  <h3 className="text-sm font-bold text-stone-400 uppercase tracking-wider">
+                    {t(status)}
+                  </h3>
+                  <span className="bg-white/5 text-stone-400 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    {orders.filter(o => o.status === status).length}
+                  </span>
                 </div>
-                <div>
-                  <p className="font-bold text-stone-900">طلب #{order.id.slice(-4)}</p>
-                  <p className="text-sm text-stone-500">{order.customerName} • {order.items.length} وجبات</p>
+                <div className="space-y-4">
+                  {orders.filter(o => o.status === status).map(order => (
+                    <Card key={order.id} className="p-4 bg-black/40 border-white/10 hover:border-[#00FF00]/30 transition-all">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <p className="text-xs font-bold text-stone-500">#{order.id.slice(-4)}</p>
+                          <p className="text-sm font-bold text-white mt-1">{order.customerName}</p>
+                        </div>
+                        <p className="text-sm font-bold text-[#00FF00]">{order.total} {t('currency')}</p>
+                      </div>
+                      <div className="space-y-1 mb-4">
+                        {order.items.map((item, i) => (
+                          <p key={i} className="text-xs text-stone-400">
+                            {item.quantity}x {item.name}
+                          </p>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        {status === 'pending' && (profile.role === 'manager' || profile.role === 'kitchen') && (
+                          <Button size="sm" className="flex-1 bg-[#00FF00] text-black" onClick={() => updateStatus(order.id, 'preparing')}>
+                            {t('preparing')}
+                          </Button>
+                        )}
+                        {status === 'preparing' && (profile.role === 'manager' || profile.role === 'kitchen') && (
+                          <Button size="sm" className="flex-1 bg-[#00FF00] text-black" onClick={() => updateStatus(order.id, 'ready_for_delivery')}>
+                            {t('ready')}
+                          </Button>
+                        )}
+                        {status === 'ready_for_delivery' && (profile.role === 'manager' || profile.role === 'driver') && (
+                          <Button size="sm" className="flex-1 bg-emerald-500 text-white" onClick={() => updateStatus(order.id, 'completed')}>
+                            {t('completed')}
+                          </Button>
+                        )}
+                      </div>
+                    </Card>
+                  ))}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                {profile.role === 'kitchen' && order.status === 'pending' && (
-                  <Button size="sm" variant="outline" onClick={() => updateOrderStatus(order.id, 'preparing')}>بدء التحضير</Button>
-                )}
-                {profile.role === 'kitchen' && order.status === 'preparing' && (
-                  <Button size="sm" variant="primary" onClick={() => updateOrderStatus(order.id, 'completed')}>اكتمال التحضير</Button>
-                )}
-                {profile.role === 'manager' && order.status === 'pending' && (
-                  <Button size="sm" variant="outline" onClick={() => updateOrderStatus(order.id, 'preparing')}>بدء التحضير</Button>
-                )}
-                <div className="text-right mr-4">
-                  <p className="font-bold text-stone-900">${order.total.toFixed(2)}</p>
-                  <p className="text-xs text-stone-400">{new Date(order.createdAt).toLocaleTimeString('ar-IQ')}</p>
+            ))}
+          </div>
+        ) : (
+          <div className="max-w-2xl space-y-8">
+            <Card className="p-8 bg-black/40 border-white/10 space-y-6">
+              <h3 className="text-xl font-bold text-white">{t('restaurantSettings')}</h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-bold text-stone-400 mb-2">{t('restaurantName')}</label>
+                  <div className="flex gap-3">
+                    <input 
+                      type="text" 
+                      className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white outline-none focus:border-[#00FF00]"
+                      value={editingName}
+                      onChange={e => setEditingName(e.target.value)}
+                    />
+                    <Button onClick={handleUpdateSettings} className="bg-[#00FF00] text-black">
+                      {t('save')}
+                    </Button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-stone-400 mb-2">{t('logo')}</label>
+                  <div className="flex items-center gap-6">
+                    <div className="w-24 h-24 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+                      {restaurant.logo ? (
+                        <img src={restaurant.logo} alt="Logo" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      ) : (
+                        <Store className="w-8 h-8 text-stone-600" />
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Button variant="outline" size="sm" className="gap-2" onClick={handleUpdateLogo}>
+                        <Camera className="w-4 h-4" />
+                        {t('capture')}
+                      </Button>
+                      <p className="text-[10px] text-stone-500">{t('logoDesc')}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </Card>
+
+            <Card className="p-8 bg-black/40 border-white/10 space-y-4">
+              <h3 className="text-xl font-bold text-white">{t('dangerZone')}</h3>
+              <p className="text-sm text-stone-400">{t('dangerZoneDesc')}</p>
+              <Button variant="danger" className="w-full sm:w-auto">
+                {t('deactivateAccount')}
+              </Button>
+            </Card>
           </div>
-        ))}
+        )}
       </div>
     </DashboardLayout>
   );
@@ -1458,6 +2014,7 @@ const RestaurantDashboard = ({ profile }: { profile: UserProfile }) => {
 
 const CustomerMenu = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { lang, t, setLang } = useLanguage();
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [meals, setMeals] = useState<Meal[]>([]);
@@ -1475,12 +2032,10 @@ const CustomerMenu = () => {
         const resData = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as Restaurant;
         setRestaurant(resData);
 
-        // Fetch categories
         const catQ = collection(db, 'restaurants', resData.id, 'categories');
         const catSnapshot = await getDocs(catQ);
         setCategories(catSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Category)));
 
-        // Fetch meals
         const mealQ = collection(db, 'restaurants', resData.id, 'meals');
         const mealSnapshot = await getDocs(mealQ);
         setMeals(mealSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Meal)));
@@ -1492,6 +2047,15 @@ const CustomerMenu = () => {
 
   const addToCart = (mealId: string) => {
     setCart(prev => ({ ...prev, [mealId]: (prev[mealId] || 0) + 1 }));
+  };
+
+  const removeFromCart = (mealId: string) => {
+    setCart(prev => {
+      const newCart = { ...prev };
+      if (newCart[mealId] > 1) newCart[mealId]--;
+      else delete newCart[mealId];
+      return newCart;
+    });
   };
 
   const cartTotal = Object.entries(cart).reduce((acc, [id, qty]) => {
@@ -1513,146 +2077,228 @@ const CustomerMenu = () => {
       };
     });
 
-    await addDoc(collection(db, 'restaurants', restaurant.id, 'orders'), {
-      restaurantId: restaurant.id,
-      items: orderItems,
-      total: cartTotal,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      customerName: customerInfo.name,
-      customerPhone: customerInfo.phone
-    });
-
-    setOrderPlaced(true);
-    setCart({});
-    setShowCheckout(false);
+    try {
+      await addDoc(collection(db, 'restaurants', restaurant.id, 'orders'), {
+        customerName: customerInfo.name,
+        customerPhone: customerInfo.phone,
+        items: orderItems,
+        total: cartTotal,
+        status: 'pending',
+        createdAt: new Date().toISOString()
+      });
+      setOrderPlaced(true);
+      setCart({});
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, `restaurants/${restaurant.id}/orders`);
+    }
   };
 
-  if (loading) return <LoadingSpinner />;
-  if (!restaurant) return <div className="min-h-screen flex items-center justify-center">Restaurant not found.</div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-stone-950"><LoadingSpinner /></div>;
+  if (!restaurant) return <div className="min-h-screen flex items-center justify-center bg-stone-950 text-white">{t('error')}</div>;
 
-  if (orderPlaced) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-stone-50 p-6 font-sans" dir="rtl">
-        <Card className="max-w-md w-full p-8 text-center space-y-6">
-          <div className="flex justify-center">
-            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center">
-              <CheckCircle2 className="w-8 h-8" />
-            </div>
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-stone-900">تم إرسال الطلب!</h1>
-            <p className="text-stone-500 mt-2">تم إرسال طلبك إلى المطبخ. سنتصل بك إذا لزم الأمر.</p>
-          </div>
-          <Button onClick={() => setOrderPlaced(false)} className="w-full">طلب جديد</Button>
-        </Card>
-      </div>
-    );
-  }
+  const isRtl = lang === 'ar' || lang === 'ku';
 
   return (
-    <div className="min-h-screen bg-stone-50 font-sans pb-24" dir="rtl">
-      {/* Hero */}
-      <div className="h-64 bg-stone-900 relative overflow-hidden">
-        {restaurant.logo && <img src={restaurant.logo} className="w-full h-full object-cover opacity-50" alt="" referrerPolicy="no-referrer" />}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6 text-center">
-          <h1 className="text-4xl font-bold tracking-tight">{restaurant.name}</h1>
-          <p className="mt-2 text-stone-300 max-w-md">{restaurant.description}</p>
+    <div className={`min-h-screen bg-stone-950 pb-32 ${isRtl ? 'rtl' : 'ltr'}`} dir={isRtl ? 'rtl' : 'ltr'}>
+      {/* Header */}
+      <div className="relative h-64 w-full overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-stone-950 z-10" />
+        <img 
+          src={restaurant.logo || "https://picsum.photos/seed/restaurant/1920/1080"} 
+          alt={restaurant.name}
+          className="w-full h-full object-cover"
+          referrerPolicy="no-referrer"
+        />
+        <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
+          <div className="max-w-4xl mx-auto flex items-end gap-6">
+            <div className="w-24 h-24 rounded-2xl bg-stone-900 border-4 border-stone-950 overflow-hidden shadow-2xl">
+              {restaurant.logo ? (
+                <img src={restaurant.logo} alt="Logo" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center"><Store className="w-10 h-10 text-stone-700" /></div>
+              )}
+            </div>
+            <div className="flex-1 mb-2">
+              <h1 className="text-3xl font-black text-white tracking-tight">{restaurant.name}</h1>
+              <p className="text-stone-400 text-sm font-bold uppercase tracking-widest mt-1">Digital Menu</p>
+            </div>
+            
+            {/* Language Switcher */}
+            <div className="flex gap-2 bg-black/40 backdrop-blur-md p-1 rounded-lg border border-white/10 mb-2">
+              {(['ar', 'en', 'ku'] as const).map((l) => (
+                <button
+                  key={l}
+                  onClick={() => setLang(l)}
+                  className={`px-3 py-1 rounded text-[10px] font-bold transition-all ${
+                    lang === l ? 'bg-[#00FF00] text-black' : 'text-stone-400 hover:text-white'
+                  }`}
+                >
+                  {t(l === 'ar' ? 'arabic' : l === 'en' ? 'english' : 'kurdish')}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto p-6 space-y-12">
-        {categories.sort((a, b) => a.order - b.order).map(category => (
-          <section key={category.id}>
-            <h2 className="text-2xl font-bold text-stone-900 mb-6 flex items-center gap-3">
-              {category.name}
-              <div className="flex-1 h-px bg-stone-200" />
-            </h2>
+      <div className="max-w-4xl mx-auto px-6 mt-12 space-y-12">
+        {categories.map(category => (
+          <section key={category.id} className="space-y-6">
+            <div className="flex items-center gap-4">
+              <h2 className="text-2xl font-black text-white tracking-tight">{category.name}</h2>
+              <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {meals.filter(m => m.categoryId === category.id).map(meal => (
-                <div key={meal.id}>
-                  <Card className="flex p-4 gap-4">
-                    {meal.image && (
-                      <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
-                        <img src={meal.image} className="w-full h-full object-cover" alt="" referrerPolicy="no-referrer" />
-                      </div>
-                    )}
-                    <div className="flex-1 flex flex-col justify-between">
+                <Card key={meal.id} className="group overflow-hidden bg-stone-900/50 border-white/5 hover:border-[#00FF00]/30 transition-all duration-500">
+                  <div className="flex h-32">
+                    <div className="w-32 h-full overflow-hidden">
+                      <img 
+                        src={meal.image || "https://picsum.photos/seed/food/400/400"} 
+                        alt={meal.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                    <div className="flex-1 p-4 flex flex-col justify-between">
                       <div>
-                        <h3 className="font-bold text-stone-900">{meal.name}</h3>
-                        <p className="text-sm text-stone-500 line-clamp-2">{meal.description}</p>
+                        <h3 className="text-lg font-bold text-white">{meal.name}</h3>
+                        <p className="text-xs text-stone-500 line-clamp-2 mt-1">{meal.description}</p>
                       </div>
                       <div className="flex items-center justify-between mt-2">
-                        <span className="font-bold text-stone-900">${meal.price.toFixed(2)}</span>
-                        <Button size="sm" variant="outline" onClick={() => addToCart(meal.id)}>
-                          <Plus className="w-4 h-4" />
-                        </Button>
+                        <span className="text-[#00FF00] font-black">{meal.price} {t('currency')}</span>
+                        <div className="flex items-center gap-3">
+                          {cart[meal.id] > 0 && (
+                            <>
+                              <button 
+                                onClick={() => removeFromCart(meal.id)}
+                                className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-red-500/20 hover:border-red-500/40 transition-all"
+                              >
+                                <Minus className="w-4 h-4" />
+                              </button>
+                              <span className="text-white font-bold text-sm w-4 text-center">{cart[meal.id]}</span>
+                            </>
+                          )}
+                          <button 
+                            onClick={() => addToCart(meal.id)}
+                            className="w-8 h-8 rounded-full bg-[#00FF00] flex items-center justify-center text-black hover:scale-110 transition-all shadow-[0_0_15px_rgba(0,255,0,0.3)]"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </Card>
-                </div>
+                  </div>
+                </Card>
               ))}
             </div>
           </section>
         ))}
       </div>
 
-      {/* Cart Bar */}
-      {cartTotal > 0 && (
-        <div className="fixed bottom-6 left-1/2 translate-x-1/2 w-full max-w-md px-6 z-50">
-          <div className="bg-stone-900 text-white rounded-2xl p-4 shadow-2xl flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="bg-white/10 p-2 rounded-lg">
+      {/* Cart Summary Bar */}
+      {Object.keys(cart).length > 0 && !showCheckout && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-lg z-50">
+          <button 
+            onClick={() => setShowCheckout(true)}
+            className="w-full bg-[#00FF00] text-black p-4 rounded-2xl flex items-center justify-between shadow-[0_20px_50px_rgba(0,255,0,0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all"
+          >
+            <div className="flex items-center gap-4">
+              <div className="bg-black/10 p-2 rounded-lg">
                 <ShoppingBag className="w-6 h-6" />
               </div>
-              <div>
-                <p className="text-xs text-stone-400 uppercase font-bold tracking-wider">طلبك</p>
-                <p className="font-bold">${cartTotal.toFixed(2)}</p>
+              <div className="text-left">
+                <p className="text-[10px] font-black uppercase tracking-widest opacity-60">{t('yourOrder')}</p>
+                <p className="font-black text-lg leading-none">{(Object.values(cart) as number[]).reduce((a, b) => a + b, 0)} items</p>
               </div>
             </div>
-            <Button variant="secondary" className="gap-2" onClick={() => setShowCheckout(true)}>
-              إتمام الطلب
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-          </div>
+            <div className="flex items-center gap-4">
+              <span className="text-xl font-black">{cartTotal} {t('currency')}</span>
+              <ChevronRight className={`w-6 h-6 ${isRtl ? 'rotate-180' : ''}`} />
+            </div>
+          </button>
         </div>
       )}
 
+      {/* Checkout Modal */}
       {showCheckout && (
-        <div className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-6">
-          <Card className="max-w-md w-full p-8 space-y-6" dir="rtl">
-            <h3 className="text-xl font-bold text-stone-900">إكمال طلبك</h3>
-            <form onSubmit={handlePlaceOrder} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-stone-700 mb-1">اسمك</label>
-                <input 
-                  type="text" required
-                  className="w-full px-4 py-2 border border-stone-200 rounded-lg outline-none"
-                  value={customerInfo.name}
-                  onChange={e => setCustomerInfo({ ...customerInfo, name: e.target.value })}
-                />
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6">
+          <div className="absolute inset-0 bg-stone-950/90 backdrop-blur-xl" onClick={() => setShowCheckout(false)} />
+          <motion.div 
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            className="relative w-full max-w-lg bg-stone-900 border-t sm:border border-white/10 rounded-t-[2.5rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl"
+          >
+            <div className="p-8">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-2xl font-black text-white tracking-tight">{t('completeOrder')}</h2>
+                <button onClick={() => setShowCheckout(false)} className="p-2 rounded-full hover:bg-white/5 text-stone-400">
+                  <X className="w-6 h-6" />
+                </button>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-stone-700 mb-1">رقم الهاتف</label>
-                <input 
-                  type="tel" required
-                  className="w-full px-4 py-2 border border-stone-200 rounded-lg outline-none"
-                  value={customerInfo.phone}
-                  onChange={e => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
-                />
-              </div>
-              <div className="pt-4 border-t border-stone-100">
-                <div className="flex justify-between font-bold text-lg mb-4">
-                  <span>الإجمالي</span>
-                  <span>${cartTotal.toFixed(2)}</span>
+
+              {orderPlaced ? (
+                <div className="text-center py-12 space-y-6">
+                  <div className="w-20 h-20 bg-[#00FF00]/10 rounded-full flex items-center justify-center mx-auto">
+                    <Check className="w-10 h-10 text-[#00FF00]" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-black text-white">{t('orderSuccess')}</h3>
+                    <p className="text-stone-400">{t('orderSuccessDesc')}</p>
+                  </div>
+                  <Button className="w-full bg-[#00FF00] text-black" onClick={() => {
+                    setShowCheckout(false);
+                    setOrderPlaced(false);
+                  }}>
+                    {t('backToMenu')}
+                  </Button>
                 </div>
-                <div className="flex gap-3">
-                  <Button type="button" variant="outline" className="flex-1" onClick={() => setShowCheckout(false)}>إلغاء</Button>
-                  <Button type="submit" className="flex-1">تأكيد الطلب</Button>
-                </div>
-              </div>
-            </form>
-          </Card>
+              ) : (
+                <form onSubmit={handlePlaceOrder} className="space-y-8">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-xs font-black text-stone-500 uppercase tracking-widest">{t('customerName')}</label>
+                      <input 
+                        required
+                        type="text" 
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-[#00FF00] transition-all"
+                        placeholder="John Doe"
+                        value={customerInfo.name}
+                        onChange={e => setCustomerInfo(prev => ({ ...prev, name: e.target.value }))}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-black text-stone-500 uppercase tracking-widest">{t('phone')}</label>
+                      <input 
+                        required
+                        type="tel" 
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-[#00FF00] transition-all"
+                        placeholder="07XX XXX XXXX"
+                        value={customerInfo.phone}
+                        onChange={e => setCustomerInfo(prev => ({ ...prev, phone: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="bg-black/40 rounded-2xl p-6 space-y-4 border border-white/5">
+                    <div className="flex justify-between items-center text-stone-400 text-sm">
+                      <span>Subtotal</span>
+                      <span>{cartTotal} {t('currency')}</span>
+                    </div>
+                    <div className="h-px bg-white/5" />
+                    <div className="flex justify-between items-center text-white font-black text-xl">
+                      <span>{t('total')}</span>
+                      <span className="text-[#00FF00]">{cartTotal} {t('currency')}</span>
+                    </div>
+                  </div>
+
+                  <Button type="submit" className="w-full h-14 text-lg font-black bg-[#00FF00] text-black rounded-2xl shadow-[0_10px_30px_rgba(0,255,0,0.2)]">
+                    {t('confirmOrder')}
+                  </Button>
+                </form>
+              )}
+            </div>
+          </motion.div>
         </div>
       )}
     </div>
@@ -1665,6 +2311,7 @@ export default function App() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState<ThemeConfig>({ mode: 'dark', primaryColor: '#00FF00' });
+  const [lang, setLang] = useState<Language>('ar');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -1675,7 +2322,6 @@ export default function App() {
         if (docSnap.exists()) {
           setProfile(docSnap.data() as UserProfile);
         } else {
-          // Check if it's the super admin
           if (firebaseUser.email === 'ddoorrxxpp@gmail.com') {
             setProfile({
               uid: firebaseUser.uid,
@@ -1697,50 +2343,47 @@ export default function App() {
     setTheme(prev => ({ ...prev, mode: prev.mode === 'dark' ? 'light' : 'dark' }));
   };
 
+  const t = (key: keyof typeof translations['ar']) => {
+    return translations[lang][key] || translations['ar'][key];
+  };
+
   if (loading) return <LoadingSpinner />;
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleMode }}>
-      <ErrorBoundary>
-        <CameraProvider>
-          <div className={cn(
-            "min-h-screen transition-colors duration-300",
-            theme.mode === 'dark' ? "bg-[#0a0a0a] text-white" : "bg-stone-50 text-stone-900"
-          )}>
-            <Router>
-              <Routes>
-                {/* Public Menu */}
-                <Route path="/menu/:slug" element={<CustomerMenu />} />
-
-                {/* Auth Routes */}
-                <Route path="/login" element={user ? <Navigate to="/" /> : <LoginPage />} />
-
-                {/* Protected Dashboard Routes */}
-                <Route path="/" element={
-                  !user ? <Navigate to="/login" /> :
-                  profile?.role === 'super_admin' ? <Navigate to="/admin" /> :
-                  profile?.role === 'chain_owner' ? <Navigate to="/chain" /> :
-                  <Navigate to="/restaurant" />
-                } />
-
-                <Route path="/admin/*" element={
-                  profile?.role === 'super_admin' ? <SuperAdminDashboard /> : <Navigate to="/" />
-                } />
-
-                <Route path="/chain/*" element={
-                  profile?.role === 'chain_owner' ? <ChainOwnerDashboard profile={profile} /> : <Navigate to="/" />
-                } />
-
-                <Route path="/restaurant/*" element={
-                  profile ? <RestaurantDashboard profile={profile} /> : <Navigate to="/" />
-                } />
-
-                <Route path="*" element={<div className="p-8 text-center">404 - Page Not Found</div>} />
-              </Routes>
-            </Router>
-          </div>
-        </CameraProvider>
-      </ErrorBoundary>
-    </ThemeContext.Provider>
+    <LanguageContext.Provider value={{ lang, setLang, t }}>
+      <ThemeContext.Provider value={{ theme, setTheme, toggleMode }}>
+        <ErrorBoundary>
+          <CameraProvider>
+            <div className={cn(
+              "min-h-screen transition-colors duration-300",
+              theme.mode === 'dark' ? "bg-[#0a0a0a] text-white" : "bg-stone-50 text-stone-900"
+            )}>
+              <Router>
+                <Routes>
+                  <Route path="/menu/:slug" element={<CustomerMenu />} />
+                  <Route path="/login" element={user ? <Navigate to="/" /> : <LoginPage />} />
+                  <Route path="/" element={
+                    !user ? <Navigate to="/login" /> :
+                    profile?.role === 'super_admin' ? <Navigate to="/admin" /> :
+                    profile?.role === 'chain_owner' ? <Navigate to="/chain" /> :
+                    <Navigate to="/restaurant" />
+                  } />
+                  <Route path="/admin/*" element={
+                    profile?.role === 'super_admin' ? <SuperAdminDashboard /> : <Navigate to="/" />
+                  } />
+                  <Route path="/chain/*" element={
+                    profile?.role === 'chain_owner' ? <ChainOwnerDashboard profile={profile} /> : <Navigate to="/" />
+                  } />
+                  <Route path="/restaurant/*" element={
+                    profile ? <RestaurantDashboard profile={profile} /> : <Navigate to="/" />
+                  } />
+                  <Route path="*" element={<div className="p-8 text-center">404 - Page Not Found</div>} />
+                </Routes>
+              </Router>
+            </div>
+          </CameraProvider>
+        </ErrorBoundary>
+      </ThemeContext.Provider>
+    </LanguageContext.Provider>
   );
 }
