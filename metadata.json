@@ -1,0 +1,7 @@
+{
+  "name": "Sana Restaurant Platform",
+  "description": "An integrated platform for restaurant management, including a super admin panel, restaurant owner dashboard, and public customer menus.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

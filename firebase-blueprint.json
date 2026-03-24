@@ -1,0 +1,81 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "System users including super admins and restaurant owners.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "name": { "type": "string", "description": "Full name" },
+        "role": { "type": "string", "enum": ["super_admin", "restaurant_owner"], "description": "User role" },
+        "restaurantId": { "type": "string", "description": "ID of the restaurant owned by this user (if applicable)" },
+        "status": { "type": "string", "enum": ["active", "inactive"], "description": "Account status" }
+      },
+      "required": ["uid", "name", "role", "status"]
+    },
+    "Restaurant": {
+      "title": "Restaurant",
+      "description": "Restaurant profile information.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique ID" },
+        "name": { "type": "string", "description": "Restaurant name" },
+        "slug": { "type": "string", "description": "Unique URL slug (e.g., al-nakheel)" },
+        "logo": { "type": "string", "description": "Logo URL" },
+        "description": { "type": "string", "description": "Short description" },
+        "ownerId": { "type": "string", "description": "UID of the restaurant owner" }
+      },
+      "required": ["id", "name", "slug", "ownerId"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Menu categories (e.g., Appetizers, Main Course).",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique ID" },
+        "name": { "type": "string", "description": "Category name" },
+        "restaurantId": { "type": "string", "description": "ID of the restaurant this category belongs to" },
+        "order": { "type": "number", "description": "Display order" }
+      },
+      "required": ["id", "name", "restaurantId"]
+    },
+    "Meal": {
+      "title": "Meal",
+      "description": "Individual menu items.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique ID" },
+        "name": { "type": "string", "description": "Meal name" },
+        "description": { "type": "string", "description": "Meal description" },
+        "price": { "type": "number", "description": "Price" },
+        "image": { "type": "string", "description": "Image URL" },
+        "categoryId": { "type": "string", "description": "ID of the category this meal belongs to" },
+        "restaurantId": { "type": "string", "description": "ID of the restaurant this meal belongs to" }
+      },
+      "required": ["id", "name", "price", "categoryId", "restaurantId"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer orders.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique ID" },
+        "restaurantId": { "type": "string", "description": "ID of the restaurant this order belongs to" },
+        "items": { "type": "array", "description": "List of ordered items" },
+        "total": { "type": "number", "description": "Total price" },
+        "status": { "type": "string", "enum": ["pending", "preparing", "completed", "cancelled"], "description": "Order status" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Order timestamp" },
+        "customerName": { "type": "string", "description": "Customer name" },
+        "customerPhone": { "type": "string", "description": "Customer phone number" }
+      },
+      "required": ["id", "restaurantId", "items", "total", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": { "schema": "User", "description": "User profiles" },
+    "/restaurants/{id}": { "schema": "Restaurant", "description": "Restaurant profiles" },
+    "/restaurants/{id}/categories/{categoryId}": { "schema": "Category", "description": "Menu categories" },
+    "/restaurants/{id}/meals/{mealId}": { "schema": "Meal", "description": "Menu items" },
+    "/restaurants/{id}/orders/{orderId}": { "schema": "Order", "description": "Restaurant orders" }
+  }
+}

@@ -1,0 +1,99 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (
+          request.auth.token.email == "ddoorrxxpp@gmail.com" ||
+          (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'super_admin')
+        );
+    }
+
+    function isRestaurantOwner(restaurantId) {
+      return isAuthenticated() &&
+        (
+          isAdmin() ||
+          (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.restaurantId == restaurantId)
+        );
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    // ===============================================================
+    // User Rules
+    // ===============================================================
+    match /users/{uid} {
+      allow read: if isAuthenticated() && (request.auth.uid == uid || isAdmin());
+      // Allow users to create their own profile (but not as super_admin)
+      // OR allow admins to create any profile
+      allow create: if (isAuthenticated() && request.auth.uid == uid && 
+                        request.resource.data.role != 'super_admin') || isAdmin();
+      // Allow users to update their own profile (but not change their role)
+      // OR allow admins to update any profile
+      allow update: if isAuthenticated() && (
+                      isAdmin() || 
+                      (request.auth.uid == uid && 
+                       request.resource.data.role == resource.data.role)
+                    );
+      allow delete: if isAdmin();
+    }
+
+    // ===============================================================
+    // Restaurant Rules
+    // ===============================================================
+    match /restaurants/{restaurantId} {
+      allow read: if true; // Public can see restaurant info
+      allow create: if isAdmin();
+      allow update: if isAdmin() || isRestaurantOwner(restaurantId);
+      allow delete: if isAdmin();
+
+      // Categories
+      match /categories/{categoryId} {
+        allow read: if true;
+        allow write: if isAdmin() || isRestaurantOwner(restaurantId);
+      }
+
+      // Meals
+      match /meals/{mealId} {
+        allow read: if true;
+        allow write: if isAdmin() || isRestaurantOwner(restaurantId);
+      }
+
+      // Orders
+      match /orders/{orderId} {
+        allow read: if isAdmin() || isRestaurantOwner(restaurantId);
+        allow create: if true; // Public can place orders
+        allow update: if isAdmin() || isRestaurantOwner(restaurantId);
+        allow delete: if isAdmin();
+      }
+    }
+
+    // ===============================================================
+    // Activity Logs
+    // ===============================================================
+    match /activity_logs/{logId} {
+      allow read: if isAdmin() || (isAuthenticated() && (
+        resource.data.uid == request.auth.uid ||
+        isRestaurantOwner(resource.data.restaurantId)
+      ));
+      allow create: if isAuthenticated() && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    // Default deny for any other collection
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
